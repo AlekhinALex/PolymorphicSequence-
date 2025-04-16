@@ -1,1 +1,1 @@
-![alt text](HonorableMention.jpg)
+![Honorable Mention](HonorableMention.jpg)
