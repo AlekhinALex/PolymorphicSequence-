@@ -212,12 +212,6 @@ void LinkedList<T>::clear()
 }
 
 template <typename T>
-LinkedList<T> *LinkedList<T>::insertAtImmutable(T item, int index)
-{
-    // TODO: add later;
-}
-
-template <typename T>
 LinkedList<T> *LinkedList<T>::concat(LinkedList<T> *list)
 {
     LinkedList<T> *newList = new LinkedList<T>();
@@ -263,7 +257,6 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
         return *this;
     }
 
-    // Clear existing nodes
     while (head != nullptr)
     {
         Node *temp = head;
@@ -274,7 +267,6 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &other)
     tail = nullptr;
     length = 0;
 
-    // Copy nodes from other list
     Node *current = other.head;
     while (current != nullptr)
     {

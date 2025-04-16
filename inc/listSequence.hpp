@@ -4,7 +4,6 @@
 #include <stdexcept>
 
 template <class T>
-
 class ListSequence : public Sequence<T>
 {
 private:

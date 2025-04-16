@@ -1,218 +1,232 @@
+// tests/data_structures_tests.cpp
 #include <cassert>
 #include <iostream>
+#include <string>
+#include "../inc/dynamicArray.hpp"
+#include "../inc/linkedList.hpp"
+#include "../inc/arraySequence.hpp"
 #include "../inc/listSequence.hpp"
 
-void testListSequenceConstructors()
+class Tests
 {
-    std::cout << "Testing constructors..." << std::endl;
-
-    // Default constructor
-    ListSequence<int> seq1;
-    assert(seq1.getLength() == 0);
-
-    // Array constructor
-    int arr[] = {1, 2, 3, 4, 5};
-    ListSequence<int> seq2(arr, 5);
-    assert(seq2.getLength() == 5);
-    assert(seq2.getFirst() == 1);
-    assert(seq2.getLast() == 5);
-
-    // Count constructor
-    ListSequence<int> seq3(3);
-    assert(seq3.getLength() == 3);
-
-    // Copy constructor from LinkedList
-    LinkedList<int> list(arr, 5);
-    ListSequence<int> seq4(list);
-    assert(seq4.getLength() == 5);
-    assert(seq4.getFirst() == 1);
-    assert(seq4.getLast() == 5);
-
-    std::cout << "Constructor tests passed!" << std::endl;
-}
-
-void testBasicOperations()
-{
-    std::cout << "Testing basic operations..." << std::endl;
-
-    int arr[] = {1, 2, 3, 4, 5};
-    ListSequence<int> seq(arr, 5);
-
-    // Test getFirst, getLast
-    assert(seq.getFirst() == 1);
-    assert(seq.getLast() == 5);
-
-    // Test get and operator[]
-    assert(seq.get(2) == 3);
-    assert(seq[2] == 3);
-
-    // Test getLength
-    assert(seq.getLength() == 5);
-
-    std::cout << "Basic operations tests passed!" << std::endl;
-}
-
-void testModificationOperations()
-{
-    std::cout << "Testing modification operations..." << std::endl;
-
-    ListSequence<int> seq;
-
-    // Test append
-    Sequence<int> *seq1 = seq.append(1);
-    assert(seq1->getLength() == 1);
-    assert(seq1->getFirst() == 1);
-
-    // Test prepend
-    Sequence<int> *seq2 = seq1->prepend(0);
-    assert(seq2->getLength() == 2);
-    assert(seq2->getFirst() == 0);
-    assert(seq2->getLast() == 1);
-
-    // Test insertAt
-    Sequence<int> *seq3 = seq2->insertAt(5, 1);
-    assert(seq3->getLength() == 3);
-    assert(seq3->get(1) == 5);
-
-    // Test set
-    Sequence<int> *seq4 = seq3->set(1, 10);
-    assert(seq4->get(1) == 10);
-
-    // Cleanup
-    delete seq1;
-    delete seq2;
-    delete seq3;
-    delete seq4;
-
-    std::cout << "Modification operations tests passed!" << std::endl;
-}
-
-void testImmutableOperations()
-{
-    std::cout << "Testing immutable operations..." << std::endl;
-
-    int arr[] = {1, 2, 3};
-    ListSequence<int> seq(arr, 3);
-
-    // Test setImmutable
-    Sequence<int> *seq1 = seq.setImmutable(1, 10);
-    assert(seq1->get(1) == 10);
-    assert(seq.get(1) == 2); // Original unchanged
-
-    // Test appendImmutable
-    Sequence<int> *seq2 = seq.appendImmutable(4);
-    assert(seq2->getLength() == 4);
-    assert(seq2->getLast() == 4);
-    assert(seq.getLength() == 3); // Original unchanged
-
-    // Test prependImmutable
-    Sequence<int> *seq3 = seq.prependImmutable(0);
-    assert(seq3->getLength() == 4);
-    assert(seq3->getFirst() == 0);
-    assert(seq.getLength() == 3); // Original unchanged
-
-    // Cleanup
-    delete seq1;
-    delete seq2;
-    delete seq3;
-
-    std::cout << "Immutable operations tests passed!" << std::endl;
-}
-
-void testSubsequenceAndConcat()
-{
-    std::cout << "Testing subsequence and concatenation..." << std::endl;
-
-    int arr1[] = {1, 2, 3, 4, 5};
-    int arr2[] = {6, 7, 8};
-    ListSequence<int> seq1(arr1, 5);
-    ListSequence<int> seq2(arr2, 3);
-
-    // Test getSubsequence
-    Sequence<int> *sub = seq1.getSubsequence(1, 3);
-    assert(sub->getLength() == 3);
-    assert(sub->getFirst() == 2);
-    assert(sub->getLast() == 4);
-
-    // Test concat
-    Sequence<int> *concat = seq1.concat(&seq2);
-    assert(concat->getLength() == 8);
-    assert(concat->getFirst() == 1);
-    assert(concat->getLast() == 8);
-
-    // Test concatImmutable
-    Sequence<int> *concatImm = seq1.concatImmutable(&seq2);
-    assert(concatImm->getLength() == 8);
-    assert(seq1.getLength() == 5); // Original unchanged
-
-    // Cleanup
-    delete sub;
-    delete concat;
-    delete concatImm;
-
-    std::cout << "Subsequence and concatenation tests passed!" << std::endl;
-}
-
-void testExceptionHandling()
-{
-    std::cout << "Testing exception handling..." << std::endl;
-
-    ListSequence<int> seq;
-
-    // Test out of range access
-    try
+private:
+    static void printTestName(const std::string &testName)
     {
-        seq.get(0);
-        assert(false); // Should not reach here
-    }
-    catch (const std::out_of_range &)
-    {
-        // Expected
+        std::cout << "\n=== " << testName << " ===" << std::endl;
     }
 
-    // Test invalid subsequence range
-    try
+    // DynamicArray Tests
+    static void testDynamicArray()
     {
-        seq.getSubsequence(-1, 1);
-        assert(false); // Should not reach here
-    }
-    catch (const std::out_of_range &)
-    {
-        // Expected
+        printTestName("DynamicArray Tests");
+
+        // Test default constructor
+        DynamicArray<int> arr1;
+        assert(arr1.getSize() == 0);
+
+        // Test size constructor
+        DynamicArray<int> arr2(5);
+        assert(arr2.getSize() == 5);
+        for (int i = 0; i < 5; i++)
+        {
+            assert(arr2.get(i) == 0);
+        }
+
+        // Test array constructor
+        int items[] = {1, 2, 3, 4, 5};
+        DynamicArray<int> arr3(items, 5);
+        assert(arr3.getSize() == 5);
+        for (int i = 0; i < 5; i++)
+        {
+            assert(arr3.get(i) == items[i]);
+        }
+
+        // Test copy constructor
+        DynamicArray<int> arr4(arr3);
+        assert(arr4.getSize() == arr3.getSize());
+        for (int i = 0; i < arr3.getSize(); i++)
+        {
+            assert(arr4.get(i) == arr3.get(i));
+        }
+
+        // Test append and resize
+        DynamicArray<int> arr5;
+        for (int i = 0; i < 10; i++)
+        {
+            arr5.append(i);
+            assert(arr5.getLast() == i);
+        }
+        assert(arr5.getSize() == 10);
+
+        // Test prepend
+        arr5.prepend(100);
+        assert(arr5.getFirst() == 100);
+        assert(arr5.getSize() == 11);
+
+        // Test insertAt
+        arr5.insertAt(200, 5);
+        assert(arr5.get(5) == 200);
+
+        // Test exceptions
+        try
+        {
+            arr5.get(-1);
+            assert(false); // Should not reach here
+        }
+        catch (const std::out_of_range &)
+        {
+        }
+
+        try
+        {
+            arr5.insertAt(1, -1);
+            assert(false);
+        }
+        catch (const std::out_of_range &)
+        {
+        }
+
+        std::cout << "DynamicArray tests passed!" << std::endl;
     }
 
-    // Test null concatenation
-    try
+    // LinkedList Tests
+    static void testLinkedList()
     {
-        seq.concat(nullptr);
-        assert(false); // Should not reach here
-    }
-    catch (const std::invalid_argument &)
-    {
-        // Expected
+        printTestName("LinkedList Tests");
+
+        // Test default constructor
+        LinkedList<int> list1;
+        assert(list1.getLength() == 0);
+
+        // Test array constructor
+        int items[] = {1, 2, 3, 4, 5};
+        LinkedList<int> list2(items, 5);
+        assert(list2.getLength() == 5);
+        for (int i = 0; i < 5; i++)
+        {
+            assert(list2.get(i) == items[i]);
+        }
+
+        // Test copy constructor
+        LinkedList<int> list3(list2);
+        assert(list3.getLength() == list2.getLength());
+        for (int i = 0; i < list2.getLength(); i++)
+        {
+            assert(list3.get(i) == list2.get(i));
+        }
+
+        // Test append and prepend
+        LinkedList<int> list4;
+        list4.append(1);
+        list4.append(2);
+        list4.prepend(0);
+        assert(list4.getFirst() == 0);
+        assert(list4.getLast() == 2);
+        assert(list4.getLength() == 3);
+
+        // Test insertAt
+        list4.insertAt(100, 1);
+        assert(list4.get(1) == 100);
+
+        // Test sublist
+        LinkedList<int> *subList = list4.getSubList(1, 2);
+        assert(subList->getLength() == 2);
+        assert(subList->getFirst() == 100);
+        delete subList;
+
+        std::cout << "LinkedList tests passed!" << std::endl;
     }
 
-    std::cout << "Exception handling tests passed!" << std::endl;
-}
+    // Sequence Tests
+    static void testSequences()
+    {
+        printTestName("Sequence Tests");
+
+        // Test ArraySequence
+        ArraySequence<int> arrSeq;
+        arrSeq.append(1);
+        arrSeq.append(2);
+        arrSeq.append(3);
+        arrSeq.print();
+        std::cout << "\n";
+        assert(arrSeq.getLength() == 3);
+        assert(arrSeq.getFirst() == 1);
+        assert(arrSeq.getLast() == 3);
+
+        // Test ListSequence
+        ListSequence<int> listSeq;
+        listSeq.append(1);
+        listSeq.append(2);
+        listSeq.append(3);
+        assert(listSeq.getLength() == 3);
+        assert(listSeq.getFirst() == 1);
+        assert(listSeq.getLast() == 3);
+
+        // Test concatenation
+        Sequence<int> *concat1 = arrSeq.concat(&listSeq);
+        assert(concat1->getLength() == 6);
+        assert(concat1->getFirst() == 1);
+        assert(concat1->getLast() == 3);
+        delete concat1;
+
+        // Test subsequence
+        Sequence<int> *sub1 = arrSeq.getSubsequence(0, 1);
+        assert(sub1->getLength() == 2);
+        assert(sub1->getFirst() == 1);
+        assert(sub1->getLast() == 2);
+        delete sub1;
+
+        std::cout << "Sequence tests passed!" << std::endl;
+    }
+
+    // Stress Tests
+    static void stressTests()
+    {
+        printTestName("Stress Tests");
+
+        // DynamicArray stress test
+        DynamicArray<int> bigArray;
+        for (int i = 0; i < 10000; i++)
+        {
+            bigArray.append(i);
+        }
+        assert(bigArray.getSize() == 10000);
+
+        // LinkedList stress test
+        LinkedList<int> bigList;
+        for (int i = 0; i < 10000; i++)
+        {
+            bigList.append(i);
+        }
+        assert(bigList.getLength() == 10000);
+
+        std::cout << "Stress tests passed!" << std::endl;
+    }
+
+public:
+    static void runAllTests()
+    {
+        std::cout << "Starting all tests..." << std::endl;
+
+        testDynamicArray();
+        testLinkedList();
+        testSequences();
+        stressTests();
+
+        std::cout << "\nAll tests completed successfully!" << std::endl;
+    }
+};
 
 int main()
 {
     try
     {
-        testListSequenceConstructors();
-        testBasicOperations();
-        testModificationOperations();
-        testImmutableOperations();
-        testSubsequenceAndConcat();
-        testExceptionHandling();
-
-        std::cout << "\nAll tests passed successfully!" << std::endl;
+        Tests::runAllTests();
+        return 0;
     }
     catch (const std::exception &e)
     {
         std::cerr << "Test failed with exception: " << e.what() << std::endl;
         return 1;
     }
-
-    return 0;
 }

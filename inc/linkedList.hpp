@@ -21,21 +21,21 @@ private:
     Node *getNodeAt(int index) const;
 
 public:
-    LinkedList();                          // Создать пустой список
-    LinkedList(int count);                 // Создать пустой список
-    LinkedList(T *items, int count);       // Копировать элементы из переданного массива
-    LinkedList(const LinkedList<T> &list); // Копирующий конструктор
+    LinkedList();
+    LinkedList(int count);
+    LinkedList(T *items, int count);
+    LinkedList(const LinkedList<T> &list);
     ~LinkedList();
 
-    T getFirst() const;     // Получить первый элемент всписке
-    T getLast() const;      // Получить последний элемент в списке
-    T get(int index) const; // Получить элемент по индексу
+    T getFirst() const;
+    T getLast() const;
+    T get(int index) const;
 
-    LinkedList<T> *getSubList(int startIndex, int endIndex); // Получить список из всех элементов, начиная с startIndex и заканчивая endIndex.
+    LinkedList<T> *getSubList(int startIndex, int endIndex);
 
-    int getLength() const; // Получить длину списка
+    int getLength() const;
 
-    void append(const T &item); // Добавляет элемент в конец списка
+    void append(const T &item);
     void prepend(const T &item);
     void set(int index, T value);
     void insertAt(T item, int index);

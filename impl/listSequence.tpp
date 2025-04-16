@@ -47,12 +47,14 @@ Sequence<T> *ListSequence<T>::getSubsequence(int startIndex, int endIndex)
         throw std::out_of_range("Invalid index range");
     }
 
-    ListSequence<T> *result = new ListSequence<T>();
+    ListSequence<T> *subList = new ListSequence<T>();
+
     for (int i = startIndex; i <= endIndex; i++)
     {
-        result->list.append(get(i));
+        subList->list.append(get(i));
     }
-    return result;
+
+    return subList;
 }
 
 template <class T>
@@ -83,6 +85,7 @@ Sequence<T> *ListSequence<T>::insertAt(T item, int index)
     return newSequence;
 }
 
+// TODO: make sure this func is right written Should I use concate from linked list?
 template <class T>
 Sequence<T> *ListSequence<T>::concat(Sequence<T> *other)
 {
@@ -150,7 +153,7 @@ Sequence<T> *ListSequence<T>::concatImmutable(Sequence<T> *list)
 }
 
 template <class T>
-void ListSequence<T>::print() // Removed const
+void ListSequence<T>::print()
 {
     list.print();
 }

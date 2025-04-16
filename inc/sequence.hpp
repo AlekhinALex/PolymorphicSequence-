@@ -1,5 +1,6 @@
 #pragma once
-
+// TODO: check if func do what they have to do. For example, does it modify or return copy
+//! CHECK listSeq and arraySeq
 template <class T>
 class Sequence
 {
@@ -17,15 +18,17 @@ public:
 
     virtual Sequence<T> *append(T item) = 0;
     virtual Sequence<T> *appendImmutable(T item) = 0;
+
     virtual Sequence<T> *prepend(T item) = 0;
     virtual Sequence<T> *prependImmutable(T item) = 0;
 
     virtual Sequence<T> *insertAt(T item, int index) = 0;
     virtual Sequence<T> *insertAtImmutable(T item, int index) = 0;
-    virtual void print() = 0;
 
     virtual Sequence<T> *concat(Sequence<T> *list) = 0;
     virtual Sequence<T> *concatImmutable(Sequence<T> *list) = 0;
+
+    virtual void print() = 0;
 
     virtual ~Sequence() = default;
 };
