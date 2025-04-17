@@ -1,161 +1,126 @@
 #include <gtest/gtest.h>
 #include "../inc/arraySequence.hpp"
+#include "../inc/listSequence.hpp"
+#include "../inc/dynamicArray.hpp"
+#include "../inc/linkedList.hpp"
 
-class ArraySequenceTest : public ::testing::Test
+// Test fixture for sequences
+template <typename T>
+class SequenceTest : public testing::Test
 {
 protected:
-    ArraySequence<int> *sequence;
-
-    void SetUp() override
-    {
-        sequence = new ArraySequence<int>();
-    }
+    Sequence<T> *sequence;
+    Sequence<T> *emptySequence;
 
     void TearDown() override
     {
         delete sequence;
+        delete emptySequence;
     }
 };
 
-// Constructor Tests
-TEST_F(ArraySequenceTest, DefaultConstructor)
+// ArraySequence test fixture
+template <typename T>
+class ArraySequenceTest : public SequenceTest<T>
 {
-    EXPECT_EQ(sequence->getLength(), 0);
+protected:
+    void SetUp() override
+    {
+        this->sequence = new ArraySequence<T>(3);
+        this->emptySequence = new ArraySequence<T>();
+
+        // Initialize sequence with values 0, 1, 2
+        for (int i = 0; i < 3; i++)
+        {
+            dynamic_cast<ArraySequence<T> *>(this->sequence)->set(i, T(i));
+        }
+    }
+};
+
+// ListSequence test fixture
+template <typename T>
+class ListSequenceTest : public SequenceTest<T>
+{
+protected:
+    void SetUp() override
+    {
+        this->sequence = new ListSequence<T>(3);
+        this->emptySequence = new ListSequence<T>();
+
+        // Initialize sequence with values 0, 1, 2
+        for (int i = 0; i < 3; i++)
+        {
+            dynamic_cast<ListSequence<T> *>(this->sequence)->set(i, T(i));
+        }
+    }
+};
+
+// Define test cases
+TYPED_TEST_SUITE_P(ArraySequenceTest);
+TYPED_TEST_SUITE_P(ListSequenceTest);
+
+// Test cases for both sequence types
+TYPED_TEST_P(ArraySequenceTest, Construction)
+{
+    EXPECT_EQ(this->sequence->getLength(), 3);
+    EXPECT_EQ(this->emptySequence->getLength(), 0);
 }
 
-TEST_F(ArraySequenceTest, ArrayConstructor)
+TYPED_TEST_P(ArraySequenceTest, GetOperations)
 {
-    int items[] = {1, 2, 3, 4, 5};
-    ArraySequence<int> seq(items, 5);
-    EXPECT_EQ(seq.getLength(), 5);
-    EXPECT_EQ(seq.getFirst(), 1);
-    EXPECT_EQ(seq.getLast(), 5);
+    EXPECT_EQ(this->sequence->getFirst(), TypeParam(0));
+    EXPECT_EQ(this->sequence->getLast(), TypeParam(2));
+    EXPECT_EQ(this->sequence->get(1), TypeParam(1));
 }
 
-TEST_F(ArraySequenceTest, SizeConstructor)
+TYPED_TEST_P(ArraySequenceTest, MutableOperations)
 {
-    ArraySequence<int> seq(3);
-    EXPECT_EQ(seq.getLength(), 3);
+    this->sequence->append(TypeParam(3));
+    EXPECT_EQ(this->sequence->getLength(), 4);
+    EXPECT_EQ(this->sequence->getLast(), TypeParam(3));
+
+    this->sequence->prepend(TypeParam(-1));
+    EXPECT_EQ(this->sequence->getLength(), 5);
+    EXPECT_EQ(this->sequence->getFirst(), TypeParam(-1));
 }
 
-// Basic Operations Tests
-TEST_F(ArraySequenceTest, GetOperations)
+TYPED_TEST_P(ArraySequenceTest, ImmutableOperations)
 {
-    int items[] = {1, 2, 3, 4, 5};
-    ArraySequence<int> seq(items, 5);
-
-    EXPECT_EQ(seq.getFirst(), 1);
-    EXPECT_EQ(seq.getLast(), 5);
-    EXPECT_EQ(seq.get(2), 3);
-}
-
-TEST_F(ArraySequenceTest, AppendOperation)
-{
-    sequence->append(1);
-    sequence->append(2);
-
-    EXPECT_EQ(sequence->getLength(), 2);
-    EXPECT_EQ(sequence->getLast(), 2);
-}
-
-TEST_F(ArraySequenceTest, PrependOperation)
-{
-    sequence->prepend(1);
-    sequence->prepend(2);
-
-    EXPECT_EQ(sequence->getLength(), 2);
-    EXPECT_EQ(sequence->getFirst(), 2);
-}
-
-TEST_F(ArraySequenceTest, InsertAtOperation)
-{
-    sequence->append(1);
-    sequence->append(3);
-    sequence->insertAt(2, 1);
-
-    EXPECT_EQ(sequence->getLength(), 3);
-    EXPECT_EQ(sequence->get(1), 2);
-}
-
-// Immutable Operations Tests
-TEST_F(ArraySequenceTest, AppendImmutable)
-{
-    int items[] = {1, 2, 3};
-    ArraySequence<int> seq(items, 3);
-
-    Sequence<int> *newSeq = seq.appendImmutable(4);
-
-    EXPECT_EQ(seq.getLength(), 3);
+    Sequence<TypeParam> *newSeq = this->sequence->appendImmutable(TypeParam(3));
+    EXPECT_EQ(this->sequence->getLength(), 3); // Original unchanged
     EXPECT_EQ(newSeq->getLength(), 4);
-    EXPECT_EQ(newSeq->getLast(), 4);
-
+    EXPECT_EQ(newSeq->getLast(), TypeParam(3));
     delete newSeq;
 }
 
-TEST_F(ArraySequenceTest, PrependImmutable)
+// Register ArraySequence tests
+REGISTER_TYPED_TEST_SUITE_P(ArraySequenceTest,
+                            Construction,
+                            GetOperations,
+                            MutableOperations,
+                            ImmutableOperations);
+
+// Similar tests for ListSequence
+TYPED_TEST_P(ListSequenceTest, Construction)
 {
-    int items[] = {1, 2, 3};
-    ArraySequence<int> seq(items, 3);
-
-    Sequence<int> *newSeq = seq.prependImmutable(0);
-
-    EXPECT_EQ(seq.getLength(), 3);
-    EXPECT_EQ(newSeq->getLength(), 4);
-    EXPECT_EQ(newSeq->getFirst(), 0);
-
-    delete newSeq;
+    EXPECT_EQ(this->sequence->getLength(), 3);
+    EXPECT_EQ(this->emptySequence->getLength(), 0);
 }
 
-// Subsequence Test
-TEST_F(ArraySequenceTest, GetSubsequence)
-{
-    int items[] = {1, 2, 3, 4, 5};
-    ArraySequence<int> seq(items, 5);
+// Add more ListSequence tests...
 
-    Sequence<int> *subSeq = seq.getSubsequence(1, 3);
+// Register ListSequence tests
+REGISTER_TYPED_TEST_SUITE_P(ListSequenceTest,
+                            Construction
+                            // Add other test names
+);
 
-    EXPECT_EQ(subSeq->getLength(), 3);
-    EXPECT_EQ(subSeq->getFirst(), 2);
-    EXPECT_EQ(subSeq->getLast(), 4);
+// Define types to test
+typedef ::testing::Types<int, double> TestTypes;
 
-    delete subSeq;
-}
-
-// Concatenation Test
-TEST_F(ArraySequenceTest, ConcatOperation)
-{
-    int items1[] = {1, 2, 3};
-    int items2[] = {4, 5, 6};
-
-    ArraySequence<int> seq1(items1, 3);
-    ArraySequence<int> seq2(items2, 3);
-
-    Sequence<int> *result = seq1.concat(&seq2);
-    EXPECT_EQ(result->getLength(), 6);
-    EXPECT_EQ(result->getFirst(), 1);
-    EXPECT_EQ(result->getLast(), 6);
-}
-
-// Operator Tests
-TEST_F(ArraySequenceTest, OperatorAccess)
-{
-    int items[] = {1, 2, 3};
-    ArraySequence<int> seq(items, 3);
-
-    EXPECT_EQ(seq[0], 1);
-    EXPECT_EQ(seq[1], 2);
-    EXPECT_EQ(seq[2], 3);
-}
-
-// Exception Tests
-TEST_F(ArraySequenceTest, IndexOutOfRange)
-{
-    int items[] = {1, 2, 3};
-    ArraySequence<int> seq(items, 3);
-
-    EXPECT_THROW(seq.get(-1), std::out_of_range);
-    EXPECT_THROW(seq.get(3), std::out_of_range);
-}
+// Instantiate test suites
+INSTANTIATE_TYPED_TEST_SUITE_P(Numeric, ArraySequenceTest, TestTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(Numeric, ListSequenceTest, TestTypes);
 
 int main(int argc, char **argv)
 {

@@ -1,4 +1,3 @@
-// tests/sequence_tests.cpp
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -11,18 +10,33 @@ int main()
 {
     // Create initial sequence
     ArraySequence<int> *arrSeq = new ArraySequence<int>();
-    Sequence<int> *seq = arrSeq->append(1)->append(2)->append(3)->append(4)->append(5);
+    Sequence<int> *seq = arrSeq;
+
+    // Build sequence
+    for (int i = 1; i <= 5; i++)
+    {
+        Sequence<int> *newSeq = seq->append(i);
+        if (seq != arrSeq)
+        { // Don't delete the original arrSeq
+            delete seq;
+        }
+        seq = newSeq;
+    }
 
     std::cout << "Original sequence: ";
-    seq->print(); // Should print: 1 2 3 4 5
-    std::cout << "\n";
-    std::cout << "Subsequence (1,3): ";
-    Sequence<int> *subSeq = seq->getSubsequence(1, 3);
-    subSeq->print(); // Should print: 2 3 4
+    seq->print();
+
+    std::cout << "\nSubsequence (1,3): ";
+    Sequence<int> *subSeq = seq->getSubsequence(0, 3);
+    subSeq->print();
 
     // Cleanup
+    if (seq != arrSeq)
+    {
+        delete seq;
+    }
     delete arrSeq;
-    delete seq;
     delete subSeq;
+
     return 0;
 }

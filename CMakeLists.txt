@@ -7,10 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "inc/*.hpp")
 file(GLOB IMPLEMENTATIONS "impl/*.tpp")
+file(GLOB TEST_HEADERS "tests/*.hpp")
+
 
 find_package(GTest REQUIRED)
+include(GoogleTest)
 
 include_directories(${GTEST_INCLUDE_DIRS} inc impl)
+
 
 add_executable(lab2
     src/main.cpp
@@ -18,10 +22,11 @@ add_executable(lab2
     ${IMPLEMENTATIONS}
 )
 
-add_executable(googleTests
+add_executable(tests
     tests/googleTests.cpp
     ${HEADERS}
     ${IMPLEMENTATIONS}
+    ${TEST_HEADERS}
 )
 
-target_link_libraries(googleTests GTest::GTest GTest::Main pthread)
+target_link_libraries(tests GTest::GTest GTest::Main pthread)
