@@ -1,5 +1,5 @@
-#include "../inc/linkedList.hpp"
 #include <iostream>
+
 template <typename T>
 LinkedList<T>::LinkedList() : head(nullptr), tail(nullptr), length(0) {}
 

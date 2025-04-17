@@ -18,10 +18,10 @@ add_executable(lab2
     ${IMPLEMENTATIONS}
 )
 
-# add_executable(googleTests
-#     tests/googleTests.cpp
-#     ${HEADERS}
-#     ${IMPLEMENTATIONS}
-# )
+add_executable(googleTests
+    tests/googleTests.cpp
+    ${HEADERS}
+    ${IMPLEMENTATIONS}
+)
 
-# target_link_libraries(googleTests GTest::GTest GTest::Main pthread)
+target_link_libraries(googleTests GTest::GTest GTest::Main pthread)

@@ -1,11 +1,19 @@
-#include <iostream>
-#include "../inc/arraySequence.hpp"
-
 template <class T>
 ArraySequence<T>::ArraySequence() : array() {}
 
 template <class T>
-ArraySequence<T>::ArraySequence(T *items, int count) : array(items, count) {}
+ArraySequence<T>::ArraySequence(T *items, int count)
+{
+    if (items == nullptr && count > 0)
+    {
+        throw std::invalid_argument("Null array with non-zero count");
+    }
+    if (count < 0)
+    {
+        throw std::invalid_argument("Negative count");
+    }
+    array = DynamicArray<T>(items, count);
+}
 
 template <class T>
 ArraySequence<T>::ArraySequence(int count) : array(count) {}
@@ -43,35 +51,31 @@ int ArraySequence<T>::getLength()
 template <class T>
 Sequence<T> *ArraySequence<T>::getSubsequence(int startIndex, int endIndex)
 {
-    if (startIndex < 0 || endIndex >= getLength() || startIndex > endIndex)
+    if (startIndex < 0 || endIndex >= this->getLength() || startIndex > endIndex)
     {
-        throw std::out_of_range("Invalid index range");
+        throw std::out_of_range("Invalid subsequence range");
     }
 
-    Sequence<T> *subArray = new ArraySequence<T>();
-
+    ArraySequence<T> *newSequence = new ArraySequence<T>();
     for (int i = startIndex; i <= endIndex; i++)
     {
-        subArray->append(this->get(i));
+        newSequence->append(this->get(i));
     }
-
-    return subArray;
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ArraySequence<T>::append(T item)
 {
-    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
-    newSequence->array.append(item);
-    return newSequence;
+    array.append(item);
+    return this;
 }
 
 template <class T>
 Sequence<T> *ArraySequence<T>::prepend(T item)
 {
-    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
-    newSequence->array.prepend(item);
-    return newSequence;
+    array.prepend(item);
+    return this;
 }
 
 template <class T>
@@ -81,9 +85,8 @@ Sequence<T> *ArraySequence<T>::insertAt(T item, int index)
     {
         throw std::out_of_range("Invalid index for insertion");
     }
-    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
-    newSequence->array.insertAt(item, index);
-    return newSequence;
+    array.insertAt(item, index);
+    return this;
 }
 
 template <class T>
@@ -97,7 +100,6 @@ Sequence<T> *ArraySequence<T>::set(int index, T data)
     return this;
 }
 
-// TODO: make sure this func is right written. Should I use concate from dynamicArray?
 template <class T>
 Sequence<T> *ArraySequence<T>::concat(Sequence<T> *other)
 {
@@ -106,19 +108,11 @@ Sequence<T> *ArraySequence<T>::concat(Sequence<T> *other)
         throw std::invalid_argument("Cannot concatenate with null sequence");
     }
 
-    ArraySequence<T> *result = new ArraySequence<T>();
-
-    for (int i = 0; i < getLength(); i++)
-    {
-        result->array.append(get(i));
-    }
-
     for (int i = 0; i < other->getLength(); i++)
     {
-        result->array.append(other->get(i));
+        array.append(other->get(i));
     }
-
-    return result;
+    return this;
 }
 
 template <class T>
@@ -132,25 +126,36 @@ Sequence<T> *ArraySequence<T>::setImmutable(int index, T data)
 template <class T>
 Sequence<T> *ArraySequence<T>::appendImmutable(T item)
 {
-    return append(item);
+    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
+    newSequence->append(item);
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ArraySequence<T>::prependImmutable(T item)
 {
-    return prepend(item);
+    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
+    newSequence->prepend(item);
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ArraySequence<T>::insertAtImmutable(T item, int index)
 {
-    return insertAt(item, index);
+    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
+    newSequence->insertAt(item, index);
+    return newSequence;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::concatImmutable(Sequence<T> *array)
+Sequence<T> *ArraySequence<T>::concatImmutable(Sequence<T> *other)
 {
-    return concat(array);
+    ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
+    for (int i = 0; i < other->getLength(); i++)
+    {
+        newSequence->append(other->get(i));
+    }
+    return newSequence;
 }
 
 template <class T>

@@ -1,5 +1,3 @@
-#include "../inc/listSequence.hpp"
-
 template <class T>
 ListSequence<T>::ListSequence() : list() {}
 
@@ -48,29 +46,25 @@ Sequence<T> *ListSequence<T>::getSubsequence(int startIndex, int endIndex)
     }
 
     ListSequence<T> *subList = new ListSequence<T>();
-
     for (int i = startIndex; i <= endIndex; i++)
     {
         subList->list.append(get(i));
     }
-
     return subList;
 }
 
 template <class T>
 Sequence<T> *ListSequence<T>::append(T item)
 {
-    ListSequence<T> *newSequence = new ListSequence<T>(*this);
-    newSequence->list.append(item);
-    return newSequence;
+    list.append(item);
+    return this;
 }
 
 template <class T>
 Sequence<T> *ListSequence<T>::prepend(T item)
 {
-    ListSequence<T> *newSequence = new ListSequence<T>(*this);
-    newSequence->list.prepend(item);
-    return newSequence;
+    list.prepend(item);
+    return this;
 }
 
 template <class T>
@@ -80,12 +74,10 @@ Sequence<T> *ListSequence<T>::insertAt(T item, int index)
     {
         throw std::out_of_range("Invalid index for insertion");
     }
-    ListSequence<T> *newSequence = new ListSequence<T>(*this);
-    newSequence->list.insertAt(item, index);
-    return newSequence;
+    list.insertAt(item, index);
+    return this;
 }
 
-// TODO: make sure this func is right written Should I use concate from linked list?
 template <class T>
 Sequence<T> *ListSequence<T>::concat(Sequence<T> *other)
 {
@@ -94,19 +86,11 @@ Sequence<T> *ListSequence<T>::concat(Sequence<T> *other)
         throw std::invalid_argument("Cannot concatenate with null sequence");
     }
 
-    ListSequence<T> *result = new ListSequence<T>();
-
-    for (int i = 0; i < getLength(); i++)
-    {
-        result->list.append(get(i));
-    }
-
     for (int i = 0; i < other->getLength(); i++)
     {
-        result->list.append(other->get(i));
+        list.append(other->get(i));
     }
-
-    return result;
+    return this;
 }
 
 template <class T>
@@ -131,25 +115,36 @@ Sequence<T> *ListSequence<T>::setImmutable(int index, T data)
 template <class T>
 Sequence<T> *ListSequence<T>::appendImmutable(T item)
 {
-    return append(item);
+    ListSequence<T> *newSequence = new ListSequence<T>(*this);
+    newSequence->append(item);
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ListSequence<T>::prependImmutable(T item)
 {
-    return prepend(item);
+    ListSequence<T> *newSequence = new ListSequence<T>(*this);
+    newSequence->prepend(item);
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ListSequence<T>::insertAtImmutable(T item, int index)
 {
-    return insertAt(item, index);
+    ListSequence<T> *newSequence = new ListSequence<T>(*this);
+    newSequence->insertAt(item, index);
+    return newSequence;
 }
 
 template <class T>
 Sequence<T> *ListSequence<T>::concatImmutable(Sequence<T> *list)
 {
-    return concat(list);
+    ListSequence<T> *newSequence = new ListSequence<T>(*this);
+    for (int i = 0; i < list->getLength(); i++)
+    {
+        newSequence->append(list->get(i));
+    }
+    return newSequence;
 }
 
 template <class T>
