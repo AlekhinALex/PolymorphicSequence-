@@ -8,16 +8,14 @@
 
 int main()
 {
-    // Create initial sequence
     ArraySequence<int> *arrSeq = new ArraySequence<int>();
     Sequence<int> *seq = arrSeq;
 
-    // Build sequence
     for (int i = 1; i <= 5; i++)
     {
         Sequence<int> *newSeq = seq->append(i);
         if (seq != arrSeq)
-        { // Don't delete the original arrSeq
+        {
             delete seq;
         }
         seq = newSeq;
@@ -27,10 +25,9 @@ int main()
     seq->print();
 
     std::cout << "\nSubsequence (1,3): ";
-    Sequence<int> *subSeq = seq->getSubsequence(0, 3);
+    Sequence<int> *subSeq = seq->getSubsequence(0, 2);
     subSeq->print();
 
-    // Cleanup
     if (seq != arrSeq)
     {
         delete seq;

@@ -26,6 +26,7 @@ public:
     Sequence<T> *insertAt(T item, int index) override;
     Sequence<T> *set(int index, T data) override;
     Sequence<T> *concat(Sequence<T> *other) override;
+    void clear() { array.clear(); }
     void print() override;
 
     //* Immutable

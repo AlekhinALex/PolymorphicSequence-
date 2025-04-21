@@ -16,6 +16,10 @@ DynamicArray<T>::DynamicArray(int size) : data(new T[(size > 0 ? size : 1)]), si
 template <typename T>
 DynamicArray<T>::DynamicArray(T *items, int count) : data(new T[(count > 0 ? count : 1)]), size(count), capacity(count)
 {
+    if (!items)
+    {
+        throw std::invalid_argument("Count must be greater than 0");
+    }
     for (int i = 0; i < count; ++i)
     {
         data[i] = items[i];

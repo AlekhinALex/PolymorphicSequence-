@@ -8,6 +8,7 @@ file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "inc/*.hpp")
 file(GLOB IMPLEMENTATIONS "impl/*.tpp")
 file(GLOB TEST_HEADERS "tests/*.hpp")
+file(GLOB TEST_SOURCE "tests/*.cpp")
 
 
 find_package(GTest REQUIRED)
@@ -23,10 +24,10 @@ add_executable(lab2
 )
 
 add_executable(tests
-    tests/googleTests.cpp
+    ${TEST_SOURCE}
     ${HEADERS}
     ${IMPLEMENTATIONS}
-    ${TEST_HEADERS}
+    # ${TEST_HEADERS}
 )
 
 target_link_libraries(tests GTest::GTest GTest::Main pthread)
