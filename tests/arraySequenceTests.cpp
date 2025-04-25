@@ -42,9 +42,9 @@ TEST(ArraySequenceTest, GetFirstLast)
     seq.append(2);
     EXPECT_EQ(seq.getFirst(), 1);
     EXPECT_EQ(seq.getLast(), 2);
-    // seq.clear();
-    // EXPECT_THROW(seq.getFirst(), std::out_of_range);
-    // EXPECT_THROW(seq.getLast(), std::out_of_range);
+    seq.clear();
+    EXPECT_THROW(seq.getFirst(), std::out_of_range);
+    EXPECT_THROW(seq.getLast(), std::out_of_range);
 }
 
 TEST(ArraySequenceTest, GetSet)

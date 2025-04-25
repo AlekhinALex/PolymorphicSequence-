@@ -1,6 +1,5 @@
 #pragma once
-// TODO: check if func do what they have to do. For example, does it modify or return copy
-//! CHECK listSeq and arraySeq
+
 template <class T>
 class Sequence
 {
