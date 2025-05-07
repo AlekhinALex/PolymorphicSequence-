@@ -1,17 +1,17 @@
 #include <iostream>
-#include "../inc/linkedList.hpp"
+#include "../inc/linkedList_DBLptr.hpp"
 
 //* Iterator {
 
 template <typename T>
-LinkedList<T>::Iterator::Iterator(Node *nodePtr) : current(nodePtr) {}
+LinkedList<T>::Iterator::Iterator(Node **nodePtr) : current(nodePtr) {}
 
 template <typename T>
 typename LinkedList<T>::Iterator &LinkedList<T>::Iterator::operator++()
 {
-    if (current)
+    if (*current)
     {
-        current = current->next;
+        current = &((*current)->next);
     }
     return *this;
 }
@@ -27,17 +27,27 @@ typename LinkedList<T>::Iterator LinkedList<T>::Iterator::operator++(int)
 template <typename T>
 T &LinkedList<T>::Iterator::operator*() const
 {
-    if (!current)
+    if (!current || !*current)
     {
         throw std::runtime_error("Invalid iterator");
     }
-    return current->value;
+    return (*current)->value;
 }
 
 template <typename T>
 bool LinkedList<T>::Iterator::operator==(const Iterator &other) const
 {
-    return current == other.current;
+    if (current == other.current)
+    {
+        return true;
+    }
+
+    if (!current || !other.current)
+    {
+        return false;
+    }
+
+    return *current == *other.current;
 }
 
 template <typename T>
@@ -49,19 +59,26 @@ bool LinkedList<T>::Iterator::operator!=(const Iterator &other) const
 template <typename T>
 void LinkedList<T>::Iterator::insert(const T &item)
 {
-    throw std::runtime_error("Insert operation not supported directly through iterator");
+    Node *newNode = new Node(item);
+    newNode->next = *current;
+    *current = newNode;
 }
 
 template <typename T>
 void LinkedList<T>::Iterator::erase()
 {
-    throw std::runtime_error("Erase operation not supported directly through iterator");
+    if (*current)
+    {
+        Node *toDelete = *current;
+        *current = (*current)->next;
+        delete toDelete;
+    }
 }
 
 template <typename T>
 bool LinkedList<T>::Iterator::notEnd()
 {
-    return current != nullptr;
+    return current && *current != nullptr;
 }
 
 //* } End of Iterator section
@@ -69,14 +86,14 @@ bool LinkedList<T>::Iterator::notEnd()
 //* ConstIterator {
 
 template <typename T>
-LinkedList<T>::ConstIterator::ConstIterator(const Node *nodePtr) : current(nodePtr) {}
+LinkedList<T>::ConstIterator::ConstIterator(const Node *const *nodePtr) : current(nodePtr) {}
 
 template <typename T>
 typename LinkedList<T>::ConstIterator &LinkedList<T>::ConstIterator::operator++()
 {
-    if (current)
+    if (current && *current)
     {
-        current = current->next;
+        current = (&((*current)->next));
     }
     return *this;
 }
@@ -92,17 +109,27 @@ typename LinkedList<T>::ConstIterator LinkedList<T>::ConstIterator::operator++(i
 template <typename T>
 const T &LinkedList<T>::ConstIterator::operator*() const
 {
-    if (!current)
+    if (!current || !*current)
     {
         throw std::runtime_error("Dereferencing invalid iterator");
     }
-    return current->value;
+    return (*current)->value;
 }
 
 template <typename T>
 bool LinkedList<T>::ConstIterator::operator==(const ConstIterator &other) const
 {
-    return current == other.current;
+    if (current == other.current)
+    {
+        return true;
+    }
+
+    if (!current || !other.current)
+    {
+        return false;
+    }
+
+    return *current == *other.current;
 }
 
 template <typename T>
@@ -114,7 +141,7 @@ bool LinkedList<T>::ConstIterator::operator!=(const ConstIterator &other) const
 template <typename T>
 bool LinkedList<T>::ConstIterator::notEnd() const
 {
-    return current != nullptr;
+    return current && *current != nullptr;
 }
 
 //* } end of ConstIterator section
@@ -169,12 +196,14 @@ LinkedList<T>::~LinkedList()
 template <typename T>
 void LinkedList<T>::clear()
 {
-    Node *current = head;
-    while (current != nullptr)
+    Node *current;
+    Node *old;
+    current = head;
+    for (int i = 0; i < length; i++)
     {
-        Node *next = current->next;
-        delete current;
-        current = next;
+        old = current;
+        current = current->next;
+        delete old;
     }
     head = nullptr;
     length = 0;
@@ -183,31 +212,22 @@ void LinkedList<T>::clear()
 template <typename T>
 void LinkedList<T>::append(const T &item)
 {
-    Node *newNode = new Node(item);
+    Iterator it(&head);
 
-    if (!head)
+    while (it.notEnd())
     {
-        head = newNode;
-    }
-    else
-    {
-        Iterator it = begin();
-        while (it.current->next != nullptr)
-        {
-            ++it;
-        }
-        it.current->next = newNode;
+        ++it;
     }
 
+    it.insert(item);
     length++;
 }
 
 template <typename T>
 void LinkedList<T>::prepend(const T &item)
 {
-    Node *newNode = new Node(item);
-    newNode->next = head;
-    head = newNode;
+    Iterator it(&head);
+    it.insert(item);
     length++;
 }
 
@@ -228,7 +248,10 @@ const T &LinkedList<T>::getFirst() const
     {
         throw std::out_of_range("List is empty");
     }
-    return head->value;
+
+    ConstIterator it(&head);
+
+    return *it;
 }
 
 template <typename T>
@@ -239,12 +262,12 @@ T &LinkedList<T>::getLast()
         throw std::out_of_range("List is empty");
     }
 
-    Iterator it = begin();
-    while (it.current->next != nullptr)
+    Node *current = head;
+    while (current->next != nullptr)
     {
-        ++it;
+        current = current->next;
     }
-    return *it;
+    return current->value;
 }
 
 template <typename T>
@@ -255,12 +278,12 @@ const T &LinkedList<T>::getLast() const
         throw std::out_of_range("List is empty");
     }
 
-    ConstIterator it = begin();
-    while (it.current->next != nullptr)
+    const Node *current = head;
+    while (current->next != nullptr)
     {
-        ++it;
+        current = current->next;
     }
-    return *it;
+    return current->value;
 }
 
 template <typename T>
@@ -271,12 +294,12 @@ T &LinkedList<T>::get(const int index)
         throw std::out_of_range("Index out of range");
     }
 
-    Iterator it = begin();
+    Node *current = head;
     for (int i = 0; i < index; i++)
     {
-        ++it;
+        current = current->next;
     }
-    return *it;
+    return current->value;
 }
 
 template <typename T>
@@ -287,12 +310,12 @@ const T &LinkedList<T>::get(const int index) const
         throw std::out_of_range("Index out of range");
     }
 
-    ConstIterator it = begin();
+    const Node *current = head;
     for (int i = 0; i < index; i++)
     {
-        ++it;
+        current = current->next;
     }
-    return *it;
+    return current->value;
 }
 
 template <typename T>
@@ -303,12 +326,13 @@ void LinkedList<T>::set(const int index, const T &value)
         throw std::out_of_range("Index out of range");
     }
 
-    Iterator it = begin();
+    Iterator it(&head);
     for (int i = 0; i < index; i++)
     {
         ++it;
     }
-    it.current->value = value;
+
+    *it = value;
 }
 
 template <typename T>
@@ -319,27 +343,14 @@ void LinkedList<T>::insertAt(const T &value, const int index)
         throw std::out_of_range("Index out of range");
     }
 
-    if (index == 0)
-    {
-        prepend(value);
-        return;
-    }
-
-    if (index == length)
-    {
-        append(value);
-        return;
-    }
-
-    Iterator it = begin();
-    for (int i = 0; i < index - 1; i++)
+    Iterator it(&head);
+    for (int i = 0; i < index; i++)
     {
         ++it;
     }
 
-    Node *newNode = new Node(value);
-    newNode->next = it.current->next;
-    it.current->next = newNode;
+    it.insert(value);
+
     length++;
 }
 
@@ -356,7 +367,7 @@ LinkedList<T> *LinkedList<T>::getSubList(const int startIndex, const int endInde
 
     LinkedList<T> *subList = new LinkedList<T>();
 
-    ConstIterator it = begin();
+    ConstIterator it(&head);
     for (int i = 0; i < startIndex; i++)
     {
         ++it;
@@ -386,7 +397,7 @@ void LinkedList<T>::print() const
         return;
     }
 
-    for (ConstIterator it = begin(); it != end(); ++it)
+    for (auto it = this->begin(); it != this->end(); ++it)
     {
         std::cout << *it << " ";
     }
@@ -415,7 +426,7 @@ void LinkedList<T>::concat(const LinkedList<T> &list)
 
     for (ConstIterator it = list.begin(); it != list.end(); ++it)
     {
-        append(*it);
+        this->append(*it);
     }
 }
 

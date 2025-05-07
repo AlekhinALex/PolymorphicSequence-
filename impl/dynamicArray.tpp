@@ -5,7 +5,7 @@ template <typename T>
 DynamicArray<T>::DynamicArray() : data(new T[1]), size(0), capacity(1) {}
 
 template <typename T>
-DynamicArray<T>::DynamicArray(int size) : data(new T[(size > 0 ? size : 1)]), size(size > 0 ? size : 0), capacity((size > 0 ? size : 1))
+DynamicArray<T>::DynamicArray(const int size) : data(new T[(size > 0 ? size : 1)]), size(size > 0 ? size : 0), capacity((size > 0 ? size : 1))
 {
     for (int i = 0; i < size; ++i)
     {
@@ -14,7 +14,7 @@ DynamicArray<T>::DynamicArray(int size) : data(new T[(size > 0 ? size : 1)]), si
 }
 
 template <typename T>
-DynamicArray<T>::DynamicArray(T *items, int count) : data(new T[(count > 0 ? count : 1)]), size(count), capacity(count)
+DynamicArray<T>::DynamicArray(const T *items, const int count) : data(new T[(count > 0 ? count : 1)]), size(count), capacity(count)
 {
     if (!items)
     {
@@ -42,7 +42,7 @@ DynamicArray<T>::~DynamicArray()
 }
 
 template <typename T>
-T DynamicArray<T>::get(int index)
+T &DynamicArray<T>::get(const int index)
 {
     if (index < 0 || index >= size)
     {
@@ -52,35 +52,61 @@ T DynamicArray<T>::get(int index)
 }
 
 template <typename T>
-T DynamicArray<T>::getFirst()
+const T &DynamicArray<T>::get(const int index) const
+{
+    if (index < 0 || index >= size)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+    return data[index];
+}
+
+template <typename T>
+T &DynamicArray<T>::getFirst()
 {
     if (size == 0)
     {
-        throw std::out_of_range("");
+        throw std::out_of_range("Array is empty");
     }
 
     return data[0];
 }
 
 template <typename T>
-T DynamicArray<T>::getLast()
+const T &DynamicArray<T>::getFirst() const
 {
     if (size == 0)
     {
-        throw std::out_of_range("");
+        throw std::out_of_range("Array is empty");
+    }
+
+    return data[0];
+}
+
+template <typename T>
+T &DynamicArray<T>::getLast()
+{
+    if (size == 0)
+    {
+        throw std::out_of_range("List is empty");
     }
 
     return data[size - 1];
 }
 
 template <typename T>
-T *DynamicArray<T>::getData() const
+const T &DynamicArray<T>::getLast() const
 {
-    return data;
+    if (size == 0)
+    {
+        throw std::out_of_range("List is empty");
+    }
+
+    return data[size - 1];
 }
 
 template <typename T>
-int DynamicArray<T>::getSize()
+int DynamicArray<T>::getSize() const
 {
     return size;
 }
@@ -120,7 +146,7 @@ void DynamicArray<T>::prepend(const T &item)
 }
 
 template <typename T>
-void DynamicArray<T>::set(int index, T value)
+void DynamicArray<T>::set(const int index, const T &value)
 {
     if (index < 0 || index >= size)
     {
@@ -168,7 +194,7 @@ void DynamicArray<T>::insertAt(const T &item, int index)
 }
 
 template <typename T>
-void DynamicArray<T>::resize(int newSize)
+void DynamicArray<T>::resize(const int newSize)
 {
     if (newSize < 0)
     {
@@ -199,7 +225,7 @@ void DynamicArray<T>::resize(int newSize)
 }
 
 template <typename T>
-DynamicArray<T> *DynamicArray<T>::getSubArray(int startIndex, int endIndex)
+DynamicArray<T> *DynamicArray<T>::getSubArray(const int startIndex, const int endIndex)
 {
     if (startIndex < 0 || endIndex >= size || startIndex > endIndex)
     {
@@ -221,7 +247,7 @@ DynamicArray<T> *DynamicArray<T>::getSubArray(int startIndex, int endIndex)
 }
 
 template <typename T>
-void DynamicArray<T>::print()
+void DynamicArray<T>::print() const
 {
     for (int i = 0; i < size; i++)
     {
@@ -245,29 +271,33 @@ void DynamicArray<T>::clear()
 }
 
 template <typename T>
-DynamicArray<T> *DynamicArray<T>::concat(DynamicArray<T> *dynamicArray)
+DynamicArray<T> *DynamicArray<T>::concatImmutable(DynamicArray<T> *dynamicArray)
 {
     if (!dynamicArray)
     {
-        throw std::invalid_argument("Cannot concatenate with null array");
+        DynamicArray<T> *result = new DynamicArray<T>(*this);
+        return result;
     }
-    int newSize = dynamicArray->size + size;
-
-    DynamicArray<T> *result = new DynamicArray<T>(newSize);
-
-    for (int i = 0; i < size; i++)
-    {
-        result->data[i] = data[i];
-    }
-    for (int i = size; i < newSize; i++)
-    {
-        result->data[i] = dynamicArray->data[i - size];
-    }
-
-    result->size = newSize;
-    result->capacity = newSize;
-
+    DynamicArray<T> *result = new DynamicArray<T>(*this);
+    result->concat(dynamicArray);
     return result;
+}
+
+template <typename T>
+void DynamicArray<T>::concat(DynamicArray<T> *dynamicArray)
+{
+    if (!dynamicArray)
+    {
+        return;
+    }
+
+    int oldSize = size;
+    resize(size + dynamicArray->size);
+
+    for (int i = 0; i < dynamicArray->size; i++)
+    {
+        data[oldSize + i] = dynamicArray->data[i];
+    }
 }
 
 template <typename T>
@@ -284,6 +314,8 @@ DynamicArray<T> &DynamicArray<T>::operator=(const DynamicArray<T> &other)
         data = new T[other.size];
         size = other.size;
     }
+
+    capacity = other.capacity;
 
     for (int i = 0; i < size; i++)
     {

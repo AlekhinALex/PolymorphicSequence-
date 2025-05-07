@@ -18,9 +18,9 @@ public:
     class Iterator
     {
     public:
-        Node *current;
+        Node **current;
 
-        Iterator(Node *nodePtr);
+        Iterator(Node **nodePtr);
         Iterator &operator++();
         Iterator operator++(int);
         T &operator*() const;
@@ -35,21 +35,21 @@ public:
     class ConstIterator
     {
     public:
-        const Node *current;
-        
-        ConstIterator(const Node *nodePtr);
-        ConstIterator &operator++();
+        const Node *const *current;
         ConstIterator operator++(int);
+        ConstIterator(const Node *const *nodePtr);
+        ConstIterator &operator++();
+
         const T &operator*() const;
         bool operator!=(const ConstIterator &other) const;
         bool operator==(const ConstIterator &other) const;
         bool notEnd() const;
     };
 
-    Iterator begin() { return Iterator(head); };
+    Iterator begin() { return Iterator(&head); };
     Iterator end() { return Iterator(nullptr); };
 
-    ConstIterator begin() const { return ConstIterator(head); };
+    ConstIterator begin() const { return ConstIterator(&head); };
     ConstIterator end() const { return ConstIterator(nullptr); };
 
 public:
