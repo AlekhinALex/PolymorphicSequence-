@@ -6,10 +6,14 @@
 #include "../controllers/MainController.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
@@ -33,17 +37,17 @@ private slots:
     void onGetButtonClicked();
 
     void onShowSequenceButtonClicked();
-    void onSequenceSelected(QListWidgetItem* item);
+    void onSequenceSelected(QListWidgetItem *item);
 
-    QString generateCopyName(const QString& baseName);
+    QString generateCopyName(const QString &baseName);
     void appendImmutable();
     void prependImmutable();
     void insertAtImmutable();
     void setImmutable();
     void concatImmutable();
     void concat();
-    int getSequenceLength(const std::string& name) const;
-    MainController::ValueType stringToValueType(const QString& typeStr);
+    int getSequenceLength(const std::string &name) const;
+    MainController::ValueType stringToValueType(const QString &typeStr);
 
 private:
     Ui::MainWindow *ui;
@@ -51,9 +55,8 @@ private:
     std::string selectedSequenceName;
 
     void showSequenceValueDialog(const QString &name, int index, const QString &value);
-    void showSequenceDialog(const QString& content);
+    void showSequenceDialog(const QString &content);
     void logAction(const QString &action);
     QVariant getValidatedValue() const;
     QString askSequenceType();
 };
-

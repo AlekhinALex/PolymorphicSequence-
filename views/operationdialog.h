@@ -5,7 +5,8 @@
 #include <QLabel>
 #include <QPushButton>
 
-class OperationDialog : public QDialog {
+class OperationDialog : public QDialog
+{
     Q_OBJECT
 
 public:

@@ -5,7 +5,8 @@
 #include <QComboBox>
 #include <QDialogButtonBox>
 
-class CreateSequenceDialog : public QDialog {
+class CreateSequenceDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -18,4 +19,3 @@ private:
     QComboBox *typeComboBox;
     QDialogButtonBox *buttonBox;
 };
-

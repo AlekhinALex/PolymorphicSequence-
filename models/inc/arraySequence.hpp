@@ -1,8 +1,6 @@
 #pragma once
-
 #include "sequence.hpp"
 #include "dynamicArray.hpp"
-#include <iostream>
 
 template <class T>
 class ArraySequence : public Sequence<T>
@@ -12,32 +10,40 @@ private:
 
 public:
     ArraySequence();
-    ArraySequence(T *items, int count);
-    ArraySequence(int count);
+    ArraySequence(const T *items, int count);
+    ArraySequence(const int count);
     ArraySequence(const DynamicArray<T> &array);
-    ~ArraySequence() override;
+    virtual ~ArraySequence() override;
 
-    T getFirst() override;
-    T getLast() override;
-    T get(int index) override;
-    int getLength() override;
+    T &getFirst() override;
+    T &getLast() override;
+    T &get(const int index) override;
 
-    Sequence<T> *getSubsequence(int startIndex, int endIndex) override;
-    Sequence<T> *append(T item) override;
-    Sequence<T> *prepend(T item) override;
-    Sequence<T> *insertAt(T item, int index) override;
-    Sequence<T> *set(int index, T data) override;
-    Sequence<T> *concat(Sequence<T> *other) override;
-    void print() override;
+    const T &getFirst() const override;
+    const T &getLast() const override;
+    const T &get(const int index) const override;
 
-    Sequence<T> *setImmutable(int index, T data) override;
-    Sequence<T> *appendImmutable(T item) override;
-    Sequence<T> *prependImmutable(T item) override;
-    Sequence<T> *insertAtImmutable(T item, int index) override;
-    Sequence<T> *concatImmutable(Sequence<T> *list) override;
+    int getLength() const override;
 
-    T &operator[](int index);
-    const T &operator[](int index) const;
+    void append(const T &item) override;
+    void prepend(const T &item) override;
+    void insertAt(const T &item, int index) override;
+    void set(const int index, const T &data) override;
+    void concat(const Sequence<T> *other) override;
+
+    Sequence<T> *getSubsequence(const int startIndex, const int endIndex) const override;
+    Sequence<T> *appendImmutable(const T &item) const override;
+    Sequence<T> *prependImmutable(const T &item) const override;
+    Sequence<T> *insertAtImmutable(const T &item, const int index) const override;
+    Sequence<T> *setImmutable(const int index, const T &data) const override;
+    Sequence<T> *concatImmutable(const Sequence<T> *other) const override;
+
+    void print() const override;
+
+    void clear();
+    ArraySequence<T> &operator=(const ArraySequence<T> &other);
+    T &operator[](const int index);
+    const T &operator[](const int index) const;
 };
 
 #include "../impl/arraySequence.tpp"

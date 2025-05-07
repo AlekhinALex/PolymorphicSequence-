@@ -10,28 +10,32 @@ private:
 
 public:
     DynamicArray();
-    DynamicArray(int size);
-    DynamicArray(T *items, int count);
+    DynamicArray(const int size);
+    DynamicArray(const T *items, const int count);
     DynamicArray(const DynamicArray<T> &dynamicArray);
     ~DynamicArray();
 
-    T getFirst();
-    T getLast();
-    T get(int index);
-    T *getData() const;
+    T &getFirst();
+    T &getLast();
+    T &get(const int index);
 
-    int getSize();
+    const T &getFirst() const;
+    const T &getLast() const;
+    const T &get(const int index) const;
+
+    int getSize() const;
 
     void append(const T &item);
     void prepend(const T &item);
-    void set(int index, T value);
-    void insertAt(const T &item, int index);
-    void resize(int newSize);
-    void print();
+    void set(const int index, const T &value);
+    void insertAt(const T &item, const int index);
+    void resize(const int newSize);
+    void print() const;
     void clear();
 
-    DynamicArray<T> *getSubArray(int startIndex, int endIndex);
-    DynamicArray<T> *concat(DynamicArray<T> *dynamicArray);
+    void concat(DynamicArray<T> *dynamicArray);
+    DynamicArray<T> *concatImmutable(DynamicArray<T> *dynamicArray);
+    DynamicArray<T> *getSubArray(const int startIndex, const int endIndex);
 
     T &operator[](int index);
     const T &operator[](int index) const;

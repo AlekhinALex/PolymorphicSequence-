@@ -3,7 +3,8 @@
 #include <QFormLayout>
 #include <QLabel>
 
-CreateSequenceDialog::CreateSequenceDialog(QWidget *parent) : QDialog(parent) {
+CreateSequenceDialog::CreateSequenceDialog(QWidget *parent) : QDialog(parent)
+{
     setWindowTitle("Create Sequence");
 
     nameLineEdit = new QLineEdit(this);
@@ -25,10 +26,12 @@ CreateSequenceDialog::CreateSequenceDialog(QWidget *parent) : QDialog(parent) {
     setLayout(mainLayout);
 }
 
-QString CreateSequenceDialog::getSequenceName() const {
+QString CreateSequenceDialog::getSequenceName() const
+{
     return nameLineEdit->text();
 }
 
-QString CreateSequenceDialog::getSequenceType() const {
+QString CreateSequenceDialog::getSequenceType() const
+{
     return typeComboBox->currentText();
 }

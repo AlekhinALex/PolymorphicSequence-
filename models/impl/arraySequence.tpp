@@ -1,9 +1,10 @@
+#include "../inc/arraySequence.hpp"
 
 template <class T>
 ArraySequence<T>::ArraySequence() : array() {}
 
 template <class T>
-ArraySequence<T>::ArraySequence(T *items, int count)
+ArraySequence<T>::ArraySequence(const T *items, const int count) : array(items, count)
 {
     if (items == nullptr && count > 0)
     {
@@ -13,11 +14,10 @@ ArraySequence<T>::ArraySequence(T *items, int count)
     {
         throw std::invalid_argument("Negative count");
     }
-    array = DynamicArray<T>(items, count);
 }
 
 template <class T>
-ArraySequence<T>::ArraySequence(int count) : array(count) {}
+ArraySequence<T>::ArraySequence(const int count) : array(count) {}
 
 template <class T>
 ArraySequence<T>::ArraySequence(const DynamicArray<T> &array) : array(array) {}
@@ -26,35 +26,49 @@ template <class T>
 ArraySequence<T>::~ArraySequence() {}
 
 template <class T>
-T ArraySequence<T>::getFirst()
+T &ArraySequence<T>::getFirst()
 {
     return array.getFirst();
 }
 
 template <class T>
-T ArraySequence<T>::getLast()
+const T &ArraySequence<T>::getFirst() const
+{
+    return array.getFirst();
+}
+
+template <class T>
+T &ArraySequence<T>::getLast()
 {
     return array.getLast();
 }
 
 template <class T>
-T ArraySequence<T>::get(int index) {
-    if (index < 0 || index >= array.getSize()) {
-        throw std::out_of_range("Index " + std::to_string(index) +
-                              " out of range [0, " +
-                              std::to_string(array.getSize()-1) + "]");
-    }
+const T &ArraySequence<T>::getLast() const
+{
+    return array.getLast();
+}
+
+template <class T>
+T &ArraySequence<T>::get(const int index)
+{
     return array.get(index);
 }
 
 template <class T>
-int ArraySequence<T>::getLength()
+const T &ArraySequence<T>::get(const int index) const
+{
+    return array.get(index);
+}
+
+template <class T>
+int ArraySequence<T>::getLength() const
 {
     return array.getSize();
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::getSubsequence(int startIndex, int endIndex)
+Sequence<T> *ArraySequence<T>::getSubsequence(const int startIndex, const int endIndex) const
 {
     if (startIndex < 0 || endIndex >= this->getLength() || startIndex > endIndex)
     {
@@ -70,58 +84,53 @@ Sequence<T> *ArraySequence<T>::getSubsequence(int startIndex, int endIndex)
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::append(T item)
+void ArraySequence<T>::append(const T &item)
 {
     array.append(item);
-    return this;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::prepend(T item)
+void ArraySequence<T>::prepend(const T &item)
 {
     array.prepend(item);
-    return this;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::insertAt(T item, int index)
+void ArraySequence<T>::insertAt(const T &item, const int index)
 {
     if (index < 0 || index > getLength())
     {
         throw std::out_of_range("Invalid index for insertion");
     }
     array.insertAt(item, index);
-    return this;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::set(int index, T data)
+void ArraySequence<T>::set(const int index, const T &data)
 {
     if (index < 0 || index >= getLength())
     {
         throw std::out_of_range("Index out of range");
     }
     array[index] = data;
-    return this;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::concat(Sequence<T> *other)
+void ArraySequence<T>::concat(const Sequence<T> *other)
 {
     if (!other)
     {
-        throw std::invalid_argument("Cannot concatenate with null sequence");
+        return;
     }
 
     for (int i = 0; i < other->getLength(); i++)
     {
         array.append(other->get(i));
     }
-    return this;
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::setImmutable(int index, T data)
+Sequence<T> *ArraySequence<T>::setImmutable(const int index, const T &data) const
 {
     ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
     newSequence->set(index, data);
@@ -129,7 +138,7 @@ Sequence<T> *ArraySequence<T>::setImmutable(int index, T data)
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::appendImmutable(T item)
+Sequence<T> *ArraySequence<T>::appendImmutable(const T &item) const
 {
     ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
     newSequence->append(item);
@@ -137,7 +146,7 @@ Sequence<T> *ArraySequence<T>::appendImmutable(T item)
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::prependImmutable(T item)
+Sequence<T> *ArraySequence<T>::prependImmutable(const T &item) const
 {
     ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
     newSequence->prepend(item);
@@ -145,7 +154,7 @@ Sequence<T> *ArraySequence<T>::prependImmutable(T item)
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::insertAtImmutable(T item, int index)
+Sequence<T> *ArraySequence<T>::insertAtImmutable(const T &item, const int index) const
 {
     ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
     newSequence->insertAt(item, index);
@@ -153,24 +162,21 @@ Sequence<T> *ArraySequence<T>::insertAtImmutable(T item, int index)
 }
 
 template <class T>
-Sequence<T> *ArraySequence<T>::concatImmutable(Sequence<T> *other)
+Sequence<T> *ArraySequence<T>::concatImmutable(const Sequence<T> *other) const
 {
     ArraySequence<T> *newSequence = new ArraySequence<T>(*this);
-    for (int i = 0; i < other->getLength(); i++)
-    {
-        newSequence->append(other->get(i));
-    }
+    newSequence->concat(other);
     return newSequence;
 }
 
 template <class T>
-void ArraySequence<T>::print()
+void ArraySequence<T>::print() const
 {
     array.print();
 }
 
 template <class T>
-T &ArraySequence<T>::operator[](int index)
+T &ArraySequence<T>::operator[](const int index)
 {
     if (index < 0 || index >= getLength())
     {
@@ -180,11 +186,27 @@ T &ArraySequence<T>::operator[](int index)
 }
 
 template <class T>
-const T &ArraySequence<T>::operator[](int index) const
+const T &ArraySequence<T>::operator[](const int index) const
 {
     if (index < 0 || index >= getLength())
     {
         throw std::out_of_range("Index out of range");
     }
     return array[index];
+}
+
+template <class T>
+void ArraySequence<T>::clear()
+{
+    array.clear();
+}
+
+template <class T>
+ArraySequence<T> &ArraySequence<T>::operator=(const ArraySequence &other)
+{
+    if (this != &other)
+    {
+        array = other.array;
+    }
+    return *this;
 }

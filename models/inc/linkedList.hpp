@@ -7,44 +7,80 @@ private:
     struct Node
     {
         T value;
-
         Node *next;
-
         Node(const T &value) : value(value), next(nullptr) {}
     };
     Node *head;
-    Node *tail;
     int length;
 
-    Node *getNodeAt(int index) const;
+public:
+    /// @brief Iterator section
+    class Iterator
+    {
+    public:
+        Node *current;
+
+        Iterator(Node *nodePtr);
+        Iterator &operator++();
+        Iterator operator++(int);
+        T &operator*() const;
+        bool operator!=(const Iterator &other) const;
+        bool operator==(const Iterator &other) const;
+        void insert(const T &item);
+        void erase();
+        bool notEnd();
+    };
+
+    /// @brief ConstIterator section
+    class ConstIterator
+    {
+    public:
+        const Node *current;
+        
+        ConstIterator(const Node *nodePtr);
+        ConstIterator &operator++();
+        ConstIterator operator++(int);
+        const T &operator*() const;
+        bool operator!=(const ConstIterator &other) const;
+        bool operator==(const ConstIterator &other) const;
+        bool notEnd() const;
+    };
+
+    Iterator begin() { return Iterator(head); };
+    Iterator end() { return Iterator(nullptr); };
+
+    ConstIterator begin() const { return ConstIterator(head); };
+    ConstIterator end() const { return ConstIterator(nullptr); };
 
 public:
     LinkedList();
-    LinkedList(int count);
-    LinkedList(T *items, int count);
+    LinkedList(const int count);
+    LinkedList(const T *items, const int count);
     LinkedList(const LinkedList<T> &list);
     ~LinkedList();
 
-    T getFirst() const;
-    T getLast() const;
-    T get(int index) const;
+    const T &getFirst() const;
+    const T &getLast() const;
+    const T &get(const int index) const;
 
-    LinkedList<T> *getSubList(int startIndex, int endIndex);
+    T &getFirst();
+    T &getLast();
+    T &get(const int index);
 
     int getLength() const;
 
     void append(const T &item);
     void prepend(const T &item);
-    void set(int index, T value);
-    void insertAt(T item, int index);
-    LinkedList<T> *insertAtImmutable(T item, int index);
+    void set(int index, const T &value);
+    void insertAt(const T &value, const int index);
+
     void print() const;
     void clear();
 
-    LinkedList<T> *concat(LinkedList<T> *list);
+    void concat(const LinkedList<T> &list);
+    LinkedList<T> *concatImmutable(const LinkedList<T> &list) const;
+    LinkedList<T> *getSubList(const int startIndex, const int endIndex) const;
 
-    T &operator[](int index);
-    const T &operator[](int index) const;
     LinkedList<T> &operator=(const LinkedList<T> &other);
 };
 

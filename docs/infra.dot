@@ -1,8 +1,0 @@
-digraph INFRA {
-  node [ color = "black", fillcolor = "#E6E6E6", height =1, style = "filled,bold,rounded", fontname = "Arial" ];
-  "Models" [ label = "Models
-(STATIC_LIBRARY)", shape =rectangle ];
-  "Sequence" [ label = "Sequence
-(EXECUTABLE)", shape =rectangle, fillcolor = "#B7E0FF" ];
-  "Sequence" -> "Models";
-}
